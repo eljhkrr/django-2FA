@@ -1,0 +1,8 @@
+{% if error_msg %}<h1> {{ error_msg }} </h1>{% endif %}
+<h1>Please enter the token sent to {{ phone_number }}</h1>
+<form action="{% url 'myauth:check_token' %}" method="post">
+	{% csrf_token %}
+	<input type="text" name="token" placeholder="token" /><br>
+	<input type="hidden" name="username" value="{{username}}" />
+	<input type="submit" value="Verify" />
+</form>

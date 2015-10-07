@@ -1,0 +1,8 @@
+{% if error_msg %}<h1> {{ error_msg }} </h1>{% endif %}
+<h1>Please signin</h1>
+<form action="{% url 'myauth:verify_user' %}" method="post">
+	{% csrf_token %}
+	<input type="text" name="username" placeholder="username" /><br>
+	<input type="password" name="password" placeholder="password" /><br>
+	<input type="submit" value="Sign in" />
+</form>
