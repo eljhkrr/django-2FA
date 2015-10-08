@@ -4,10 +4,15 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login
 from django.core.urlresolvers import reverse
-from myauth.models import Two_factor
 from random import randint
 
 from django.contrib.auth.models import User
+from myauth.models import Two_factor
+
+from twilio.rest import TwilioRestClient
+from django.core.mail import send_mail
+from django.conf import settings
+from django.core.signing import Signer
 
 def register(request):
 	return render(request, 'myauth/register.html', {})
@@ -15,7 +20,12 @@ def register(request):
 def register_submit(request):
 	user = User.objects.create(first_name=request.POST['first_name'], last_name=request.POST['last_name'], username=request.POST['username'], email=request.POST['email'], password=request.POST['password'])
 	user.save()
-	#response = str(type(request))
+	tf = Two_factor.objects.create(user=user, phone_token=generate_token(), email_token=generate_token(), phone_verified=False, email_verified=False, phone_number=request.POST['phone_number'])
+	tf.save()
+	#send_sms
+	send_sms(tf.phone_number, tf.phone_token)
+	#send_email
+	send_confirmation_mail(user.email, tf.email_token, user.username)
 	return HttpResponse("Details submitted!")
 
 def signin(request):
@@ -30,7 +40,7 @@ def verify_user(request):
 		response = "success!"
 		if user.is_active:
 			user = Two_factor.objects.get(user__username=username)
-			user.phone_token = randint(1000, 9000)
+			user.phone_token = generate_token()
 			#send token over sms
 			user.save()
 			context = {'username': username, 'phone_number': obfuscate(user.phone_number)}
@@ -70,3 +80,22 @@ def obfuscate(phone_number):
 	return ''.join(n)
 
 
+def generate_token():
+	return randint(1000, 9000)
+
+def send_sms(phone_number, token):
+	client = TwilioRestClient(settings.ACCOUNT_SID, settings.AUTH_TOKEN)
+	client.messages.create(
+		to=phone_number, 
+		from_="+12019891573", 
+		body=token,  
+	)
+
+def send_confirmation_mail(email, token, username):
+	to = email
+	subject = "Email Confirmation"
+	signer = Signer()
+	signature = signer.sign(token).split(':')[1]
+	url = 'http://127.0.0.1:8000/myauth/confirmemail/?username=' + username + '&signature=' + signature
+	content = "Hi %s,\nThank you for registering on our site.\nClick on the url to confirm your email:\n%s\nThanks!" % (username, url)
+	send_mail(subject, content, settings.EMAIL_HOST_USER, [to], fail_silently=False)
