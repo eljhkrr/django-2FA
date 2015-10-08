@@ -7,8 +7,16 @@ from django.core.urlresolvers import reverse
 from myauth.models import Two_factor
 from random import randint
 
+from django.contrib.auth.models import User
+
 def register(request):
-	return HttpResponse("Register!")
+	return render(request, 'myauth/register.html', {})
+
+def register_submit(request):
+	user = User.objects.create(first_name=request.POST['first_name'], last_name=request.POST['last_name'], username=request.POST['username'], email=request.POST['email'], password=request.POST['password'])
+	user.save()
+	#response = str(type(request))
+	return HttpResponse("Details submitted!")
 
 def signin(request):
 	return render(request, 'myauth/signin.html', {})

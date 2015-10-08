@@ -8,4 +8,5 @@ urlpatterns = [
 	url(r'^verify_user/$', views.verify_user, name='verify_user'),
 	url(r'sms/$', views.sms_verify, name="verify_sms"),
 	url(r'checktoken/$', views.check_token, name="check_token"),
+	url(r'registersubmit/$', views.register_submit, name="register_submit"),
 ]
