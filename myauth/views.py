@@ -13,7 +13,8 @@ from twilio.rest import TwilioRestClient
 from django.core.mail import send_mail
 from django.conf import settings
 from django.core.signing import Signer
-import base64
+
+from django.contrib.auth.decorators import login_required
 
 def register(request):
 	return render(request, 'myauth/register.html', {})
@@ -25,35 +26,50 @@ def register_submit(request):
 	tf.save()
 	send_token_sms(tf.phone_number, tf.phone_token)
 	send_confirmation_mail(user.email, tf.email_token, user.username)
-	return HttpResponse("Details submitted!")
+	msg = "Please click on the url sent to your email: %s" % (obfuscate(user.email))
+	context = { "info_msg": msg, "phone_number": obfuscate(tf.phone_number), "username": user.username }
+	return render(request, 'myauth/sms.html', context)
+
+@login_required(login_url='/myauth/signin/')
+def content(request):
+	return HttpResponse("Only logged in users here")
 
 def confirm_email(request):
 	username = request.GET['username']
 	signature = request.GET['signature']
 	signer = Signer()
-	#TODO: Try catch for unsign
-	received_token = str(signer.unsign(signature))
-	# TODO: Try catch for user fetch
-	user = Two_factor.objects.get(user__username=username)
-	if user.email_token == received_token:
-		response = "thank you for confirming your email"
+	try:
+		received_token = str(signer.unsign(signature))
+	except Exception, e:
+		response = "Invalid URL"
 	else:
-	 	response = "Invalid URL"
+		try:
+			user = Two_factor.objects.get(user__username=username)
+		except Exception, e:
+			response = "Invalid URL"
+		else:
+			if user.email_token == received_token:
+				user.email_verified = True
+				user.save()
+				response = "thank you for confirming your email"
+			else:
+			 	response = "Invalid URL"
 	return HttpResponse(response)
 
 def signin(request):
 	return render(request, 'myauth/signin.html', {})
 
 def verify_user(request):
-	response = "Username: %s Password: %s" % (request.POST['username'], request.POST['password'])
+	#response = "Username: %s Password: %s" % (request.POST['username'], request.POST['password'])
 	username = request.POST['username']
 	password = request.POST['password']
 	user = authenticate(username=username, password=password)
 	if user is not None:
-		response = "success!"
+		#response = "success!"
 		if user.is_active:
 			user = Two_factor.objects.get(user__username=username)
 			user.phone_token = generate_token()
+			user.phone_verified = False
 			user.save()
 			send_token_sms(user.phone_number, user.phone_token)
 			context = {'username': username, 'phone_number': obfuscate(user.phone_number)}
@@ -74,11 +90,17 @@ def check_token(request):
 	try:
 		user = Two_factor.objects.get(user__username=username)
 	except Exception:
-		#redirect to signin page
-		pass
+		context = {"error_msg": "Unknown user. Please sign in again"}
+		return render(request, 'myauth/signin.html', context)
 	else:
 		if user.phone_token == token:
-			return HttpResponse("Log in successful!")
+			user.phone_verified = True
+			user.save()
+			if user.email_verified:
+				login(request, user.user)
+				return HttpResponse("Log in successful!")
+			else:
+				return HttpResponse("Please confirm your email to login")	
 		else:
 			#sign in again
 			return HttpResponse("Bad Token!")
@@ -86,7 +108,7 @@ def check_token(request):
 def obfuscate(phone_number):
 	n = []
 	for c in phone_number:
-		if len(n) < 4:
+		if len(n) < 5:
 			n.append(c)
 		else:
 			n.append('*')

@@ -10,4 +10,5 @@ urlpatterns = [
 	url(r'checktoken/$', views.check_token, name="check_token"),
 	url(r'registersubmit/$', views.register_submit, name="register_submit"),
 	url(r'confirmemail/$', views.confirm_email, name="confirm_email"),
+	url(r'content/$', views.content, name="content"),
 ]
