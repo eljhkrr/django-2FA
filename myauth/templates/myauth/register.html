@@ -1,11 +1,20 @@
-<h1>Register</h1>
-<form action="{% url 'myauth:register_submit' %}" method="post">
-	{% csrf_token %}
-	<input type="text" name="first_name" placeholder="First Name" /><br>
-	<input type="text" name="last_name" placeholder="Last Name" /><br>
-	<input type="text" name="username" placeholder="username" /><br>
-	<input type="text" name="password" placeholder="Choose a password" /><br>
-	<input type="text" name="email" placeholder="email" /><br>
-	<input type="phone" name="phone_number" placeholder="Your phone number" /><br>
-	<input type="submit" value="Register" />
-</form>
+{% extends 'myauth/base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+	<form class="form-signin" action="{% url 'myauth:register_submit' %}" method="post">
+		{% csrf_token %}
+		<h2 class="form-signin-heading">Register</h2>
+		<input class="form-control" required type="text" name="first_name" placeholder="First Name" />
+		<input class="form-control" required type="text" name="last_name" placeholder="Last Name" /><br>
+		<input class="form-control" required type="text" name="username" placeholder="username" />
+		<input class="form-control" required type="password" name="password" placeholder="Choose a password" /><br>
+		<input class="form-control" required type="email" name="email" placeholder="email" /><br>
+		<input class="form-control" required type="phone" name="phone_number" placeholder="Your phone number" /><br>
+		<button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+	</form>
+{% endblock %}
+
+
+

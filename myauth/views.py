@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.core.urlresolvers import reverse
 from random import randint
 
@@ -32,7 +32,8 @@ def register_submit(request):
 
 @login_required(login_url='/myauth/signin/')
 def content(request):
-	return HttpResponse("Only logged in users here")
+	#return HttpResponse("Only logged in users here")
+	return render(request, 'myauth/content.html', {})
 
 def confirm_email(request):
 	username = request.GET['username']
@@ -56,6 +57,10 @@ def confirm_email(request):
 			 	response = "Invalid URL"
 	return HttpResponse(response)
 
+def logoutview(request):
+	logout(request)
+	return HttpResponseRedirect(reverse('myauth:signin'))
+
 def signin(request):
 	return render(request, 'myauth/signin.html', {})
 
@@ -67,17 +72,19 @@ def verify_user(request):
 	if user is not None:
 		#response = "success!"
 		if user.is_active:
+			user_object = user
 			user = Two_factor.objects.get(user__username=username)
 			user.phone_token = generate_token()
 			user.phone_verified = False
 			user.save()
+			login(request, user_object)
 			send_token_sms(user.phone_number, user.phone_token)
 			context = {'username': username, 'phone_number': obfuscate(user.phone_number)}
 			return render(request, 'myauth/sms.html', context)
 		else:
 			pass
 	else:
-		return render(request, 'myauth/signin.html', {'error_msg': "Incorrect username/password"})
+		return render(request, 'myauth/signin.html', {'error_msg': "Incorrect username/password. Try again."})
 
 def sms_verify(request):
 	#return render(request, 'myauth/sms.html', {})
@@ -97,13 +104,15 @@ def check_token(request):
 			user.phone_verified = True
 			user.save()
 			if user.email_verified:
-				login(request, user.user)
-				return HttpResponse("Log in successful!")
+				#user_object = authenticate(username=user.user.username, password=user.user.password)
+				#login(request, user_object)
+				#return HttpResponse("Log in successful!")
+				return HttpResponseRedirect(reverse('myauth:content'))
 			else:
 				return HttpResponse("Please confirm your email to login")	
 		else:
-			#sign in again
-			return HttpResponse("Bad Token!")
+			context = {'username': user.user.username, 'phone_number': obfuscate(user.phone_number), 'error_msg': "Incorrect code. Try again."}
+			return render(request, 'myauth/sms.html', context)
 
 def obfuscate(phone_number):
 	n = []
