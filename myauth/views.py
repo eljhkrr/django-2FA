@@ -31,7 +31,6 @@ def register_submit(request):
 
 @login_required(login_url='/myauth/signin/')
 def content(request):
-	#return HttpResponse("Only logged in users here")
 	return render(request, 'myauth/content.html', {})
 
 def confirm_email(request):
