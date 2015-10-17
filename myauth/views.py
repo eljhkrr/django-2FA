@@ -141,3 +141,15 @@ def send_confirmation_mail(email, token, username):
 	url = 'http://127.0.0.1:8000/myauth/confirmemail/?username=' + username + '&signature=' + signature
 	content = "Hi %s!,\n\nThank you for registering on our site.\n\nClick on the url below to confirm your email:\n\n%s\n\nThanks!" % (username, url)
 	send_mail(subject, content, settings.EMAIL_HOST_USER, [to], fail_silently=False)
+
+
+##################################################################################
+from django_otp.decorators import otp_required
+
+@otp_required
+def restricted(request):
+	return HttpResponse("Yay?")
+	# if request.user.is_verified():
+	# 	return HttpResponse("Login successful")
+	# else:
+	# 	return HttpResponse("You are not verified!")

@@ -11,5 +11,6 @@ urlpatterns = [
 	url(r'registersubmit/$', views.register_submit, name="register_submit"),
 	url(r'confirmemail/$', views.confirm_email, name="confirm_email"),
 	url(r'content/$', views.content, name="content"),
+	url(r'restricted/$', views.restricted, name="restricted"),
 	url(r'logout/$', views.logoutview, name="logout"),
 ]
