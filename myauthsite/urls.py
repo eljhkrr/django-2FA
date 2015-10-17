@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from two_factor.urls import urlpatterns as tf_urls
-from two_facor.gateways.twilio.urls import urlpatterns as tf_twilio_urls
+from two_factor.gateways.twilio.urls import urlpatterns as tf_twilio_urls
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
