@@ -125,3 +125,20 @@ EMAIL_USE_TLS = True
 
 ACCOUNT_SID = "ACea82bfdd9b88e2487e457f1e457a4458" 
 AUTH_TOKEN = "8497f66e2b713a8fa942ee394ab937e7"
+
+LOGGING = {
+            'version': 1,
+            'disable_existing_loggers': False,
+            'handlers': {
+                'console': {
+                    'level': 'DEBUG',
+                    'class': 'logging.StreamHandler',
+                },
+            },
+            'loggers': {
+                'two_factor': {
+                    'handlers': ['console'],
+                    'level': 'INFO',
+                },
+            },
+        }
