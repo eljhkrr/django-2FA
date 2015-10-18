@@ -31,10 +31,6 @@ def register_submit(request):
 	return HttpResponseRedirect(reverse('two_factor:setup'))
 
 
-@login_required(login_url='/myauth/signin/')
-def content(request):
-	return render(request, 'myauth/content.html', {})
-
 def confirm_email(request):
 	username = request.GET['username']
 	signature = request.GET['signature']
