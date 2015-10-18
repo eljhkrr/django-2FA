@@ -7,13 +7,11 @@ from random import randint
 
 from django.contrib.auth.models import User
 from myauth.models import Two_factor
-
-from twilio.rest import TwilioRestClient
 from django.core.mail import send_mail
 from django.conf import settings
 from django.core.signing import Signer
 
-from django.contrib.auth.decorators import login_required
+from django_otp.decorators import otp_required
 
 def register(request):
 	return render(request, 'myauth/register.html', {})
@@ -72,9 +70,6 @@ def send_confirmation_mail(email, token, username):
 	send_mail(subject, content, settings.EMAIL_HOST_USER, [to], fail_silently=False)
 
 
-##################################################################################
-from django_otp.decorators import otp_required
-
 @otp_required
 def restricted(request):
 	return HttpResponse("Yay?")
@@ -82,3 +77,4 @@ def restricted(request):
 	# 	return HttpResponse("Login successful")
 	# else:
 	# 	return HttpResponse("You are not verified!")
+
