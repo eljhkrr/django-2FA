@@ -60,9 +60,7 @@ def confirm_email(request):
 def logoutview(request):
 	logout(request)
 	return HttpResponseRedirect(reverse('myauth:signin'))
-
-def signin(request):
-	return render(request, 'myauth/signin.html', {})
+	
 
 def verify_user(request):
 	#response = "Username: %s Password: %s" % (request.POST['username'], request.POST['password'])
