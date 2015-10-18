@@ -60,29 +60,7 @@ def confirm_email(request):
 def logoutview(request):
 	logout(request)
 	return HttpResponseRedirect(reverse('myauth:signin'))
-	
 
-def verify_user(request):
-	#response = "Username: %s Password: %s" % (request.POST['username'], request.POST['password'])
-	username = request.POST['username']
-	password = request.POST['password']
-	user = authenticate(username=username, password=password)
-	if user is not None:
-		#response = "success!"
-		if user.is_active:
-			user_object = user
-			user = Two_factor.objects.get(user__username=username)
-			user.phone_token = generate_token()
-			user.phone_verified = False
-			user.save()
-			login(request, user_object)
-			send_token_sms(user.phone_number, user.phone_token)
-			context = {'username': username, 'phone_number': obfuscate(user.phone_number)}
-			return render(request, 'myauth/sms.html', context)
-		else:
-			pass
-	else:
-		return render(request, 'myauth/signin.html', {'error_msg': "Incorrect username/password. Try again."})
 
 def sms_verify(request):
 	#return render(request, 'myauth/sms.html', {})
