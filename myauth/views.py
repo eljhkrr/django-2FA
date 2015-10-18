@@ -23,8 +23,8 @@ def register_submit(request):
 	password = request.POST['password']
 	user = User.objects.create_user(first_name=request.POST['first_name'], last_name=request.POST['last_name'], username=username, email=request.POST['email'], password=password)
 	user.save()
-	# tf = Two_factor.objects.create(user=user, phone_token=generate_token(), email_token=generate_token(), phone_verified=False, email_verified=False, phone_number=request.POST['phone_number'])
-	# tf.save()
+	tf = Two_factor.objects.create(user=user, phone_token=generate_token(), email_token=generate_token(), phone_verified=False, email_verified=False, phone_number=request.POST['phone_number'])
+	tf.save()
 	# send_token_sms(tf.phone_number, tf.phone_token)
 	# send_confirmation_mail(user.email, tf.email_token, user.username)
 	# msg = "Please click on the url sent to your email: %s" % (obfuscate(user.email))
