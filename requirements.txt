@@ -1,0 +1,4 @@
+Django==1.8.4
+django-formtools==1.0
+django-two-factor-auth==1.2.0
+twilio==4.6.0

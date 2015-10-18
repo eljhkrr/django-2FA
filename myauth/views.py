@@ -72,7 +72,7 @@ def send_confirmation_mail(email, token, username):
 
 @otp_required
 def restricted(request):
-	return HttpResponse("Yay?")
+	return HttpResponse("Successful two_factor login")
 	# if request.user.is_verified():
 	# 	return HttpResponse("Login successful")
 	# else:
