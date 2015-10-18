@@ -1,9 +1,0 @@
-{% extends 'myauth/base.html' %}
-
-{% block title %} Content {% endblock %}
-
-{% block content%}
-	<h3 class="form-signin bg-success">You are now logged in</h3><br>
-	<a type="button" class="btn btn-danger form-signin btn-block" href="{% url 'myauth:logout' %}">Logout</a>
-
-{% endblock %}
