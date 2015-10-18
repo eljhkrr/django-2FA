@@ -58,22 +58,6 @@ def logoutview(request):
 	return HttpResponseRedirect(reverse('myauth:signin'))
 
 
-def sms_verify(request):
-	#return render(request, 'myauth/sms.html', {})
-	response = request.POST['username']
-	return HttpResponse(response)
-
-
-def obfuscate(phone_number):
-	n = []
-	for c in phone_number:
-		if len(n) < 5:
-			n.append(c)
-		else:
-			n.append('*')
-	return ''.join(n)
-
-
 def generate_token():
 	return randint(1000, 9000)
 
