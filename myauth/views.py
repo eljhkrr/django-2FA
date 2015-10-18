@@ -81,13 +81,6 @@ def obfuscate(phone_number):
 def generate_token():
 	return randint(1000, 9000)
 
-def send_token_sms(phone_number, token):
-	client = TwilioRestClient(settings.ACCOUNT_SID, settings.AUTH_TOKEN)
-	client.messages.create(
-		to=phone_number, 
-		from_="+12019891573", 
-		body=token,  
-	)
 
 def send_confirmation_mail(email, token, username):
 	to = email
