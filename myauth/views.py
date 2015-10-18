@@ -146,7 +146,7 @@ def send_token_sms(phone_number, token):
 
 def send_confirmation_mail(email, token, username):
 	to = email
-	subject = "Email Confirmation"
+	subject = "Verify your email address"
 	signer = Signer()
 	signature = signer.sign(token)
 	url = 'http://127.0.0.1:8000/myauth/confirmemail/?username=' + username + '&signature=' + signature
