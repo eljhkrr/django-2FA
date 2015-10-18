@@ -67,28 +67,6 @@ def sms_verify(request):
 	response = request.POST['username']
 	return HttpResponse(response)
 
-def check_token(request):
-	username = request.POST['username']
-	token = request.POST['token']
-	try:
-		user = Two_factor.objects.get(user__username=username)
-	except Exception:
-		context = {"error_msg": "Unknown user. Please sign in again"}
-		return render(request, 'myauth/signin.html', context)
-	else:
-		if user.phone_token == token:
-			user.phone_verified = True
-			user.save()
-			if user.email_verified:
-				#user_object = authenticate(username=user.user.username, password=user.user.password)
-				#login(request, user_object)
-				#return HttpResponse("Log in successful!")
-				return HttpResponseRedirect(reverse('myauth:content'))
-			else:
-				return HttpResponse("Please confirm your email to login")	
-		else:
-			context = {'username': user.user.username, 'phone_number': obfuscate(user.phone_number), 'error_msg': "Incorrect code. Try again."}
-			return render(request, 'myauth/sms.html', context)
 
 def obfuscate(phone_number):
 	n = []
