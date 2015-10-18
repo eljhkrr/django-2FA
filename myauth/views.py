@@ -19,15 +19,26 @@ def register(request):
 	return render(request, 'myauth/register.html', {})
 
 def register_submit(request):
-	user = User.objects.create(first_name=request.POST['first_name'], last_name=request.POST['last_name'], username=request.POST['username'], email=request.POST['email'], password=request.POST['password'])
+	username = request.POST['username']
+	password = request.POST['password']
+	user = User.objects.create_user(first_name=request.POST['first_name'], last_name=request.POST['last_name'], username=username, email=request.POST['email'], password=password)
 	user.save()
-	tf = Two_factor.objects.create(user=user, phone_token=generate_token(), email_token=generate_token(), phone_verified=False, email_verified=False, phone_number=request.POST['phone_number'])
-	tf.save()
-	send_token_sms(tf.phone_number, tf.phone_token)
-	send_confirmation_mail(user.email, tf.email_token, user.username)
-	msg = "Please click on the url sent to your email: %s" % (obfuscate(user.email))
-	context = { "info_msg": msg, "phone_number": obfuscate(tf.phone_number), "username": user.username }
-	return render(request, 'myauth/sms.html', context)
+	# tf = Two_factor.objects.create(user=user, phone_token=generate_token(), email_token=generate_token(), phone_verified=False, email_verified=False, phone_number=request.POST['phone_number'])
+	# tf.save()
+	# send_token_sms(tf.phone_number, tf.phone_token)
+	# send_confirmation_mail(user.email, tf.email_token, user.username)
+	# msg = "Please click on the url sent to your email: %s" % (obfuscate(user.email))
+	# context = { "info_msg": msg, "phone_number": obfuscate(tf.phone_number), "username": user.username }
+	# return render(request, 'myauth/sms.html', context)
+	#########################################################################
+	#request.user = user
+	auth_user = authenticate(username=request.POST['username'], password=request.POST['password'])
+	#auth_user.backend = 'django.contrib.auth.backends.ModelBackend'
+	login(request, auth_user)
+	#return render(request, 'myauth/redirect.html', {})
+	return HttpResponseRedirect(reverse('two_factor:setup'))
+	#return HttpResponse("Registration finished")
+
 
 @login_required(login_url='/myauth/signin/')
 def content(request):
