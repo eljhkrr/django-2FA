@@ -8,4 +8,5 @@ urlpatterns = [
 	url(r'confirmemail/$', views.confirm_email, name="confirm_email"),
 	url(r'restricted/$', views.restricted, name="restricted"),
 	url(r'logout/$', views.logoutview, name="logout"),
+	url(r'email/$', views.confirm_email_error, name="confirm_email_error")
 ]

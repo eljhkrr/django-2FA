@@ -12,6 +12,7 @@ from django.conf import settings
 from django.core.signing import Signer
 
 from django_otp.decorators import otp_required
+from django.contrib.auth.decorators import user_passes_test
 
 def register(request):
 	return render(request, 'myauth/register.html', {})
@@ -70,7 +71,16 @@ def send_confirmation_mail(email, token, username):
 	send_mail(subject, content, settings.EMAIL_HOST_USER, [to], fail_silently=False)
 
 
+def confirm_email_error(request):
+	return HttpResponse("You need to verify your email before using this service")
+
+def email_verification(user):
+	u = Two_factor.objects.get(user__username=user.username)
+	return u.email_verified
+
+
 @otp_required
+@user_passes_test(email_verification, redirect_field_name=None, login_url='/myauth/email')
 def restricted(request):
 	return HttpResponse("Successful two_factor login")
 	# if request.user.is_verified():
