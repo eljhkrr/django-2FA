@@ -7,10 +7,7 @@ from random import randint
 
 from django.contrib.auth.models import User
 from myauth.models import Two_factor
-from django.core.mail import send_mail
-from django.conf import settings
 from django.core.signing import Signer
-
 from django_otp.decorators import otp_required
 from django.contrib.auth.decorators import user_passes_test
 
@@ -24,7 +21,6 @@ def register_submit(request):
 	user.save()
 	tf = Two_factor.objects.create(user=user, email_token=generate_token(), email_verified=False)
 	tf.save()
-	send_confirmation_mail(user.email, tf.email_token, user.username)
 	auth_user = authenticate(username=request.POST['username'], password=request.POST['password'])
 	login(request, auth_user)
 	return HttpResponseRedirect(reverse('two_factor:setup'))
@@ -59,16 +55,6 @@ def logoutview(request):
 
 def generate_token():
 	return randint(1000, 9000)
-
-
-def send_confirmation_mail(email, token, username):
-	to = email
-	subject = "Verify your email address"
-	signer = Signer()
-	signature = signer.sign(token)
-	url = 'http://127.0.0.1:8000/myauth/confirmemail/?username=' + username + '&signature=' + signature
-	content = "Hi %s!,\n\nThank you for registering on our site.\n\nClick on the url below to confirm your email:\n\n%s\n\nThanks!" % (username, url)
-	send_mail(subject, content, settings.EMAIL_HOST_USER, [to], fail_silently=False)
 
 
 def confirm_email_error(request):
