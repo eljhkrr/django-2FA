@@ -6,4 +6,4 @@ from myauth.utils import send_confirmation_mail
 @receiver(post_save, sender=Two_factor)
 def tf_post_save(sender, **kwargs):
 	instance = kwargs['instance']
-	send_confirmation_mail(instance.user.email, instance.email_token, "Baaaaaah!!")
+	send_confirmation_mail(instance.user.email, instance.email_token, instance.user.first_name)

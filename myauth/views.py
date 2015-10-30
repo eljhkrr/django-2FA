@@ -7,10 +7,7 @@ from random import randint
 
 from django.contrib.auth.models import User
 from myauth.models import Two_factor
-from django.core.mail import send_mail
-from django.conf import settings
 from django.core.signing import Signer
-
 from django_otp.decorators import otp_required
 from django.contrib.auth.decorators import user_passes_test
 

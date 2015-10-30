@@ -1,3 +1,7 @@
+from django.core.signing import Signer
+from django.core.mail import send_mail
+from django.conf import settings
+
 def send_confirmation_mail(email, token, username):
 	to = email
 	subject = "Verify your email address"
