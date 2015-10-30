@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from myauth.models import Two_factor, Question
-from myauth.views import send_confirmation_mail
+from myauth.utils import send_confirmation_mail
 
 @receiver(post_save, sender=Two_factor)
 def tf_post_save(sender, **kwargs):
