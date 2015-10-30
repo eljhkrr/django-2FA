@@ -5,3 +5,6 @@ class Two_factor(models.Model):
 	user = models.OneToOneField(User)
 	email_token = models.CharField(max_length=100)
 	email_verified = models.BooleanField()
+
+class Question(models.Model):
+	t = models.CharField(max_length=100)
