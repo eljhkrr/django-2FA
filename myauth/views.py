@@ -24,7 +24,6 @@ def register_submit(request):
 	user.save()
 	tf = Two_factor.objects.create(user=user, email_token=generate_token(), email_verified=False)
 	tf.save()
-	send_confirmation_mail(user.email, tf.email_token, user.username)
 	auth_user = authenticate(username=request.POST['username'], password=request.POST['password'])
 	login(request, auth_user)
 	return HttpResponseRedirect(reverse('two_factor:setup'))
